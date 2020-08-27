@@ -18,7 +18,7 @@ namespace AgendaConsultorioMedico.Tests
         [Fact]
         public void CanAddApointment_DeveAdicionarUnicaConsulta()
         {
-            // Caso em que não existe nenhuma outra consulta registrada
+            // Caso em que nï¿½o existe nenhuma outra consulta registrada
 
             var expected = true;
 
@@ -34,14 +34,14 @@ namespace AgendaConsultorioMedico.Tests
         [Fact]
         public void CanAddAppointment_DeveAdicionarAposOutraConsulta()
         {
-            // Caso em que Horário de Início da Nova Consulta é depois do Horário de Fim da consulta existente.
+            // Caso em que Horï¿½rio de Inï¿½cio da Nova Consulta ï¿½ depois do Horï¿½rio de Fim da consulta existente.
             // Ex:
             //   Consulta Existente:
-            //      Início: 13:00
+            //      Inï¿½cio: 13:00
             //      Fim: 14:00
             //
             //   Consulta Nova:
-            //      Início: 14:00
+            //      Inï¿½cio: 14:00
             //      Fim: 15:00
 
             var expected = true;
@@ -63,21 +63,25 @@ namespace AgendaConsultorioMedico.Tests
         [Fact]
         public void CanAddAppointment_DeveAdicionarAntesOutraConsulta()
         {
-            // Caso em que Horário de fim da Nova Consulta é antes do Horário de Início da consulta existente.
+            // Caso em que Horï¿½rio de fim da Nova Consulta ï¿½ antes do Horï¿½rio de Inï¿½cio da consulta existente.
             // Ex:
             //   Consulta Existente:
-            //      Início: 13:00
+            //      Inï¿½cio: 13:00
             //      Fim: 14:00
             //
             //   Consulta Nova:
-            //      Início: 12:00
+            //      Inï¿½cio: 12:00
             //      Fim: 13:00
 
             var expected = true;
 
-            var consultaExistente = new Appointment(2, DateTime.Now.AddHours(1), DateTime.Now.AddHours(2), "", 2);
+            var agora = DateTime.Now;
+            var umaHoraDepois = agora.AddHours(1);
+            var duasHorasDepois = agora.AddHours(2);
 
-            var consultaNova = new Appointment(1, DateTime.Now, DateTime.Now.AddHours(1), "", 1);
+            var consultaExistente = new Appointment(2, umaHoraDepois, duasHorasDepois, "", 2);
+
+            var consultaNova = new Appointment(1, agora, umaHoraDepois, "", 1);
 
             List<Appointment> listaConsultas = new List<Appointment>
             {
@@ -92,26 +96,32 @@ namespace AgendaConsultorioMedico.Tests
         [Fact]
         public void CanAddAppointment_DeveAdicionarEntreDuasConsultas()
         {
-            // Caso em que Horário da nova consulta é entre duas outras consultas.
+            // Caso em que Horï¿½rio da nova consulta ï¿½ entre duas outras consultas.
             // Ex:
             //   Consulta Cedo:
-            //      Início: 13:00
+            //      Inï¿½cio: 13:00
             //      Fim: 14:00
             //
             //   Consulta Tarde:
-            //      Início: 15:00
+            //      Inï¿½cio: 15:00
             //      Fim: 16:00
             // 
             //   Consulta Nova:
-            //      Início: 14:00
+            //      Inï¿½cio: 14:00
             //      Fim: 15:00
 
 
             var expected = true;
 
-            var consultaTarde = new Appointment(2, DateTime.Now.AddHours(2), DateTime.Now.AddHours(3), "", 2);
+            var agora = DateTime.Now;
+            var umaHoraDepois = agora.AddHours(1);
+            var duasHorasDepois = agora.AddHours(2);
+            var tresHorasDepois = agora.AddHours(3);
 
-            var consultaCedo = new Appointment(1, DateTime.Now, DateTime.Now.AddHours(1), "", 1);
+
+            var consultaTarde = new Appointment(2, duasHorasDepois, tresHorasDepois, "", 2);
+
+            var consultaCedo = new Appointment(1, agora, umaHoraDepois, "", 1);
 
             List<Appointment> listaConsultas = new List<Appointment>
             {
@@ -119,7 +129,7 @@ namespace AgendaConsultorioMedico.Tests
                 consultaTarde
             };
 
-            var novaConsulta = new Appointment(3, DateTime.Now.AddHours(1), DateTime.Now.AddHours(2), "", 3);
+            var novaConsulta = new Appointment(3, umaHoraDepois, duasHorasDepois, "", 3);
 
             bool actual = _appointmentValidation.CanAddAppointment(novaConsulta, listaConsultas);
 
@@ -129,14 +139,14 @@ namespace AgendaConsultorioMedico.Tests
         [Fact]
         public void CanAddAppointment_NaoDeveAdicionarNoMesmoHorario()
         {
-            // Caso em que Horário de Início e Fim das consultas são iguais.
+            // Caso em que Horï¿½rio de Inï¿½cio e Fim das consultas sï¿½o iguais.
             // Ex:
             //   Consulta 1:
-            //      Início: 13:00
+            //      Inï¿½cio: 13:00
             //      Fim: 14:00
             //
             //   Consulta 2:
-            //      Início: 13:00
+            //      Inï¿½cio: 13:00
             //      Fim: 14:00
 
             var expected = false;
@@ -158,14 +168,14 @@ namespace AgendaConsultorioMedico.Tests
         [Fact]
         public void CanAddAppointment_NaoDeveAdicionarNoHorarioInicioConflitante()
         {
-            // Caso em que Horário de Início da Nova consulta é antes do Horário de Fim da consulta anterior.
+            // Caso em que Horï¿½rio de Inï¿½cio da Nova consulta ï¿½ antes do Horï¿½rio de Fim da consulta anterior.
             // Ex:
             //   Consulta Existente:
-            //      Início: 13:00
+            //      Inï¿½cio: 13:00
             //      Fim: 14:00
             //
             //   Consulta Nova:
-            //      Início: 13:30
+            //      Inï¿½cio: 13:30
             //      Fim: 14:30
 
             var expected = false;
@@ -187,14 +197,14 @@ namespace AgendaConsultorioMedico.Tests
         [Fact]
         public void CanAddAppointment_NaoDeveAdicionarNoHorarioFimConflitante()
         {
-            // Caso em que Horário de Fim da Nova consulta é depois do Horário de Início da consulta existente.
+            // Caso em que Horï¿½rio de Fim da Nova consulta ï¿½ depois do Horï¿½rio de Inï¿½cio da consulta existente.
             // Ex:
             //   Consulta Existente:
-            //      Início: 13:00
+            //      Inï¿½cio: 13:00
             //      Fim: 14:00
             //
             //   Consulta Nova:
-            //      Início: 12:30
+            //      Inï¿½cio: 12:30
             //      Fim: 13:30
 
             var expected = false;
